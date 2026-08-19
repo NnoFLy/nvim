@@ -25,7 +25,6 @@ local function get_connections()
             break
         end
 
-
         if driver and driver ~= "" and url and url ~= "" then
             table.insert(connections, {
                 alias = alias or ("database-" .. i),

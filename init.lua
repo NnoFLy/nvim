@@ -8,10 +8,8 @@ vim.o.swapfile = false
 vim.o.wildmode = "longest:list,full"
 vim.o.wildmenu = true
 vim.o.showtabline = 1
-vim.o.laststatus = 0
-vim.o.cmdheight = 1
-vim.o.cursorline = true
-vim.o.colorcolumn = "120"
+vim.o.laststatus = 3
+vim.o.cmdheight = 0
 vim.o.smartindent = true
 vim.o.expandtab = true
 vim.o.shiftwidth = 4
@@ -31,26 +29,7 @@ vim.o.spell = true
 vim.o.spelllang = "en,ru"
 vim.o.mousescroll = "ver:1,hor:1"
 vim.o.linebreak = true
-
-vim.o.autocomplete = false
-vim.o.pumheight = 5
 vim.o.winborder = "rounded"
-
-vim.opt.complete = {
-  "o^20",  -- 'o' omnifunc, which becomes LSP completion when an LSP attaches
-  ".^10",  -- '.' current buffer
-  "w^10",  -- 'w' buffers in other windows
-  "b^10",  -- 'b' loaded buffers
-  "u^10",  -- 'u' unloaded buffers
-}
-
-vim.opt.completeopt = {
-    "menu",
-    "menuone",
-    "noinsert",
-    "fuzzy",
-    "popup",
-}
 
 vim.o.signcolumn = "yes:1"
 vim.o.number = true
@@ -129,8 +108,7 @@ vim.keymap.set({ "n", "x" }, "k", function()
         return "k"
     end
 end, vim.tbl_extend("force", opts, { expr = true, remap = true, desc = "Move up by display line" }))
-vim.keymap.set("n", "<C-d>", "<C-d>zz", { noremap = true, silent = true })
-vim.keymap.set("n", "<C-u>", "<C-u>zz", { noremap = true, silent = true })
+vim.keymap.set("n", "gp", "`[v`]", { desc = "Select pasted text" })
 vim.keymap.set("n", "J", "mzJ`z", vim.tbl_extend("force", opts, { desc = "Join line and keep cursor" }))
 vim.keymap.set("n", "n", "nzzzv", vim.tbl_extend("force", opts, { desc = "Next search result centered" }))
 vim.keymap.set("n", "N", "Nzzzv", vim.tbl_extend("force", opts, { desc = "Previous search result centered" }))
@@ -211,7 +189,7 @@ _G.cmdline_kill_to_end = function()
     return line:sub(1, pos - 1)
 end
 
-vim.keymap.set( "c", "<C-k>", [[<C-\>e v:lua.cmdline_kill_to_end()<CR>]], { noremap = true })
+vim.keymap.set("c", "<C-k>", [[<C-\>e v:lua.cmdline_kill_to_end()<CR>]], { noremap = true })
 
 -- Auto commands
 local main_group = vim.api.nvim_create_augroup("MainGroup", { clear = true })
@@ -251,48 +229,6 @@ vim.api.nvim_create_autocmd("FileType", {
     end,
 })
 
--- Theme
-local stille_path = {
-    dir = "/home/nnofly/code/personal/stille.nvim",
-    url = "https://github.com/I0I-I0I/stille.nvim"
-}
-
-if vim.fn.isdirectory(stille_path.dir) == 1 then
-    vim.opt.runtimepath:append(stille_path.dir)
-else
-    vim.pack.add({ stille_path.url })
-end
-
-vim.pack.add({
-    "https://github.com/vague-theme/vague.nvim",
-    "https://github.com/neanias/everforest-nvim",
-    "https://github.com/craftzdog/solarized-osaka.nvim",
-})
-
-require("vague").setup({ transparent = true })
-require("solarized-osaka").setup({ transparent = true })
-require("everforest").setup({
-    ui_contrast = "high",
-    background = "hard",
-    italics = true,
-    transparent_background_level = 2,
-    diagnostic_text_highlight = true,
-    spell_foreground = true,
-})
-
-require("gnome-track").setup(function(scheme)
-    local theme, is_transparent
-    if scheme == "prefer-dark" then
-        is_transparent, theme = true, "stille-leere"
-        vim.cmd.colo("vague")
-        return
-    else
-        is_transparent, theme = false, "stille-hell"
-    end
-    require("stille").setup({ transparent = is_transparent, terminal_colors = false })
-    vim.cmd.colo(theme)
-end)
-
 -- Large configs
 
 local load_plenary = LoadOnce(function()
@@ -302,7 +238,7 @@ load_plenary()
 
 ---@param name string
 ---@param load_opts { defer?: boolean } | nil
-local function load_large(name, load_opts)
+local function load_part(name, load_opts)
     load_opts = load_opts or {}
 
     local function load()
@@ -326,14 +262,16 @@ local function load_large(name, load_opts)
     return load()
 end
 
-load_large("utils", { defer = false })
-load_large("explorer", { defer = false })
-load_large("db", { defer = false })
-load_large("org-mode", { defer = false })
-load_large("telescopee", { defer = false })
+load_part("theme", { defer = false })
+load_part("utils", { defer = false })
+load_part("explorer", { defer = false })
+load_part("db", { defer = false })
+load_part("org-mode", { defer = false })
+load_part("telescopee", { defer = false })
 
-load_large("translate", { defer = true })
-load_large("multiple-cursors", { defer = true })
-load_large("lsp-config", { defer = true })
-load_large("git", { defer = true })
-load_large("llm", { defer = true })
+load_part("completion", { defer = true })
+load_part("translate", { defer = true })
+load_part("multiple-cursors", { defer = true })
+load_part("lsp-config", { defer = true })
+load_part("git", { defer = true })
+load_part("llm", { defer = true })

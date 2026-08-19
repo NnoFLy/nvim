@@ -129,7 +129,7 @@ vim.api.nvim_create_autocmd("FileType", {
         bmap(ev.buf, { "n", "i" }, "<M-t>", pi.cycle_thinking_level, "Pi: cycle thinking")
         bmap(ev.buf, { "n", "i" }, "<M-n>", pi.new_session, "Pi: new session")
         bmap(ev.buf, { "n", "i" }, "<M-x>", pi.compact, "Pi: compact context")
-        bmap(ev.buf, { "n", "i" }, "<M-v>", pi.paste_image, "Pi: paste image")
+        bmap(ev.buf, { "n", "i" }, "<M-S-y>", pi.paste_image, "Pi: paste image")
     end,
 })
 
@@ -144,7 +144,7 @@ vim.api.nvim_create_autocmd("FileType", {
         bmap(ev.buf, { "n", "i" }, "<M-k>", pi.focus_chat_prompt,
             "Pi: focus prompt")
 
-        bmap(ev.buf, { "n", "i" }, "<M-v>", pi.paste_image,
+        bmap(ev.buf, { "n", "i" }, "<M-S-y>", pi.paste_image,
             "Pi: paste image")
     end,
 })

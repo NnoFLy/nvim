@@ -290,16 +290,16 @@ local load_org_mode = LoadOnce(function ()
 
     })
 end)
-load_org_mode()
-
-vim.keymap.set("n", "<leader>oA", "<cmd>OrgSuperAgenda!<cr>", { noremap = true, silent = true, desc = "Org: open Agenda" })
 
 vim.api.nvim_create_autocmd("FileType", {
-    callback = function (ev)
-        vim.keymap.set("n",
-            "<leader>oA",
-            "<cmd>OrgSuperAgenda!<cr>",
-            { noremap = true, silent = true, desc = "Org: open Agenda", buffer = ev.buf }
-        )
+    pattern = { "org" },
+    callback = function(ev)
+        load_org_mode()
+        vim.keymap.set("n", "<leader>oA", "<cmd>OrgSuperAgenda!<cr>",
+            { noremap = true, silent = true, desc = "Org: open Agenda", buffer = ev.buf })
     end
 })
+
+Defer(load_org_mode)
+
+vim.keymap.set("n", "<leader>oA", "<cmd>OrgSuperAgenda!<cr>", { noremap = true, silent = true, desc = "Org: open Agenda" })

@@ -63,7 +63,7 @@ vim.api.nvim_create_autocmd("FileType", {
                 return
             end
 
-            require("utils.wallpaper").set(
+            require("wallpaper").set(
                 vim.fs.joinpath(dir, name)
             )
         end, {

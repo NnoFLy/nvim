@@ -67,7 +67,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
         if not client then return end
         vim.lsp.semantic_tokens.enable(false, { bufnr = args.buf })
         if client and client:supports_method("textDocument/completion") then
-            vim.lsp.completion.enable(true, client.id, args.buf, { autotrigger = false })
+            vim.lsp.completion.enable(true, client.id, args.buf, { autotrigger = vim.g.autotrigger })
         end
     end,
 })
