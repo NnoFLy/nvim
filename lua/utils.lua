@@ -39,9 +39,8 @@ end, { noremap = true, silent = true, desc = "Img-clip: paste image from clipboa
 
 local load_image_preview = LoadOnce(function ()
     vim.pack.add({ "https://github.com/3rd/image.nvim" })
+
     require("image").setup({
-        backend = "kitty",
-        processor = "magick_cli",
         hijack_file_patterns = {
             "*.png",
             "*.jpg",
@@ -50,9 +49,32 @@ local load_image_preview = LoadOnce(function ()
             "*.webp",
             "*.avif",
         },
+        backend = "kitty",
+        processor = "magick_cli",
+
+        integrations = {
+            org = {
+                enabled = true,
+                filetypes = { "org" },
+                only_render_image_at_cursor = false,
+                only_render_image_at_cursor_mode = "inline",
+            },
+        },
+
+        max_height_window_percentage = 50,
+        max_width_window_percentage = 50,
     })
 end)
-load_image_preview()
+if not vim.g.neovide then
+    load_image_preview()
+end
+
+-- Local buffer
+local load_scope = LoadOnce(function ()
+    vim.pack.add({ "https://github.com/tiagovla/scope.nvim" })
+    require("scope").setup({})
+end)
+Defer(load_scope)
 
 -- Tree-sitter
 local load_treesitter = LoadOnce(function()
@@ -75,13 +97,6 @@ local load_surround = LoadOnce(function()
     })
 end)
 Defer(load_surround)
-
--- Fidget
-local load_fidget = LoadOnce(function()
-    vim.pack.add({ "https://github.com/j-hui/fidget.nvim" })
-    require("fidget").setup({})
-end)
-Defer(load_fidget)
 
 -- QuickFix
 local load_qf = LoadOnce(function()

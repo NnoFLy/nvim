@@ -179,7 +179,11 @@ local function create_file_browser_helpers()
 end
 
 local function configure_telescope()
-    local buffer_previewer_maker = create_image_previewer()
+    local previewers = require("telescope.previewers")
+    local buffer_previewer_maker = vim.g.neovide
+        and previewers.buffer_previewer_maker
+        or create_image_previewer()
+
     local file_browser = create_file_browser_helpers()
 
     telescope.setup({
@@ -247,6 +251,7 @@ local function configure_telescope()
     pcall(telescope.load_extension, "ui-select")
     pcall(telescope.load_extension, "file_browser")
     pcall(telescope.load_extension, "current_buffer")
+    pcall(telescope.load_extension, "scope")
 end
 
 --- Loading
@@ -334,10 +339,14 @@ vim.keymap.set("n", "<M-/>", function()
     require("telescope_current_buffer").fuzzy()
 end, { desc = "Telescope: grep current buffer" })
 
-vim.keymap.set("n", "<C-f>", ":Telescope file_browser path=%:p:h select_buffer=true<CR>")
+vim.keymap.set("n", "<C-f>", "<cmd>Telescope file_browser path=%:p:h select_buffer=true<cr>")
 
 vim.keymap.set("n", "<C-p>", picker("fd"), {
     desc = "Telescope: project files",
+})
+
+vim.keymap.set("n", "<C-n>", "<cmd>tabnew<cr><cmd>Telescope file_browser path=~/SYNC/notes/<cr>", {
+    desc = "Telescope: notes",
 })
 
 vim.keymap.set("n", "<C-g>", picker("live_grep"), {
@@ -348,6 +357,10 @@ vim.keymap.set("n", "<C-b>", picker("buffers", {
     previewer = false,
 }), {
     desc = "Telescope: buffers",
+})
+
+vim.keymap.set("n", "<C-M-b>", "<cmd>Telescope scope buffers<cr>", {
+    desc = "Telescope: all scope buffersbuffers",
 })
 
 vim.keymap.set({ "n", "t" }, "<M-t>", picker("buffers", {

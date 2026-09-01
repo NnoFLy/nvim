@@ -6,7 +6,7 @@ local load_pantran = LoadOnce(function()
     pantran = require("pantran")
 
     pantran.setup({
-        default_engine = "google",
+        default_engine = "yandex",
 
         engines = {
             yandex = { default_source = "auto", default_target = "ru" },
