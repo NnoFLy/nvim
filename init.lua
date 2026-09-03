@@ -133,7 +133,7 @@ end
 -- Abbreviations
 vim.cmd.cabbrev("W w")
 vim.cmd.cabbrev("Wa wa")
-vim.cmd.cabbrev("n norm")
+vim.cmd.cabbrev("no norm")
 
 -- Keymaps
 local opts = { silent = true, noremap = true }
@@ -398,4 +398,4 @@ load_part("completion", { defer = true })
 load_part("translate", { defer = true })
 load_part("lsp-config", { defer = true })
 load_part("git", { defer = true })
-load_part("llm", { defer = true })
+-- load_part("llm", { defer = true })

@@ -345,6 +345,10 @@ vim.keymap.set("n", "<C-p>", picker("fd"), {
     desc = "Telescope: project files",
 })
 
+vim.keymap.set("n", "<M-r>", picker("registers"), {
+    desc = "Telescope: registers",
+})
+
 vim.keymap.set("n", "<C-n>", "<cmd>tabnew<cr><cmd>Telescope file_browser path=~/SYNC/notes/<cr>", {
     desc = "Telescope: notes",
 })

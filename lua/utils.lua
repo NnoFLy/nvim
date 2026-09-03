@@ -119,16 +119,26 @@ end)
 Defer(load_qf)
 
 -- Marks
-local load_spearmint = LoadOnce(function ()
-    vim.pack.add({ "https://github.com/adithyasource/spearmint.nvim" })
-    require("spearmint").setup()
-    vim.keymap.set("n", "m", function() Spearmint.set_mark() end)
-    vim.keymap.set("n", "'", function() Spearmint.jump() end)
-    vim.keymap.set("i", "<M-'>", function()
-        Spearmint.jump()
-    end)
+local load_gm = LoadOnce(function()
+    local gm_path = {
+        dir = "/home/nnofly/code/personal/gm.nvim",
+        url = "https://github.com/I0I-I0I/gm.nvim"
+    }
+
+    if vim.fn.isdirectory(gm_path.dir) == 1 then
+        vim.opt.runtimepath:append(gm_path.dir)
+    else
+        vim.pack.add({ gm_path.url })
+    end
+
+    local gm = require("gm")
+    gm.setup()
+
+    vim.keymap.set("n", "m", gm.set_mark, { desc = "Set mark" })
+    vim.keymap.set("n", "'", gm.jump_to_mark, { desc = "Jump to mark" })
+    vim.keymap.set("n", "<M-e>", gm.edit_marks)
 end)
-Defer(load_spearmint)
+Defer(load_gm)
 
 -- Cloak
 local load_cloak = LoadOnce(function()
