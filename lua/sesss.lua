@@ -1,7 +1,7 @@
 local load_sess = LoadOnce(function ()
     local sess_path = {
         dir = "/home/nnofly/code/personal/sess.nvim",
-        url = "https://github.com/I0I-I0I/sess.nvim"
+        url = "https://github.com/NnoFLy/sess.nvim"
     }
 
     if vim.fn.isdirectory(sess_path.dir) == 1 then
@@ -10,7 +10,11 @@ local load_sess = LoadOnce(function ()
         vim.pack.add({ sess_path.url })
     end
 
-    require("sess").setup({
+    local statusline = vim.o.statusline
+
+    local sess = require("sess")
+
+    sess.setup({
         paths = {
             "~/code/personal/*",
             "~/code/work/*",
@@ -19,6 +23,17 @@ local load_sess = LoadOnce(function ()
             "~/.dotfiles/*",
         },
         smart_auto_load = false,
+        after_load = {
+            custom = function()
+                local session = ("[" .. vim.g.sess_current_session .. "] ") or ""
+                vim.o.statusline = session .. statusline
+            end
+        },
+        on_unload = {
+            custom = function()
+                vim.o.statusline = statusline
+            end
+        }
     })
 
     vim.keymap.set("n", "<C-s>", "<cmd>Sess list<cr>",

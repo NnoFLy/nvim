@@ -250,20 +250,12 @@ local function configure_telescope()
 
     pcall(telescope.load_extension, "ui-select")
     pcall(telescope.load_extension, "file_browser")
-    pcall(telescope.load_extension, "current_buffer")
     pcall(telescope.load_extension, "scope")
 end
 
 --- Loading
 
 local load_telescope = LoadOnce(function()
-    local telescope_jump_line = {
-        dir = "~/code/personal/telescope-current-buffer.nvim",
-        url = "https://github.com/i0i-i0i/telescope-current-buffer.nvim",
-    }
-
-    vim.opt.runtimepath:append(telescope_jump_line.dir)
-
     vim.pack.add({
         "https://github.com/nvim-telescope/telescope.nvim",
         "https://github.com/nvim-telescope/telescope-file-browser.nvim",
@@ -334,10 +326,6 @@ local function picker(name, telescope_opts)
 end
 
 --- Keymaps
-
-vim.keymap.set("n", "<M-/>", function()
-    require("telescope_current_buffer").fuzzy()
-end, { desc = "Telescope: grep current buffer" })
 
 vim.keymap.set("n", "<C-f>", "<cmd>Telescope file_browser path=%:p:h select_buffer=true<cr>")
 

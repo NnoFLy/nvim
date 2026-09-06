@@ -133,26 +133,19 @@ end
 -- Abbreviations
 vim.cmd.cabbrev("W w")
 vim.cmd.cabbrev("Wa wa")
-vim.cmd.cabbrev("no norm")
+vim.cmd.cabbrev("N norm")
 
 -- Keymaps
 local opts = { silent = true, noremap = true }
 
 vim.keymap.set("i", "<C-c>", "<cmd>noh<cr><Esc>", vim.tbl_extend("force", opts, { desc = "Escape" }))
+vim.keymap.set({ "n", "i" }, "<C-[>", "<cmd>noh<cr><Esc>", vim.tbl_extend("force", opts, { desc = "Escape" }))
 vim.keymap.set({ "n", "x" }, "j", function()
-    if vim.v.count == 0 then
-        return "gj"
-    else
-        return "j"
-    end
-end, vim.tbl_extend("force", opts, { expr = true, remap = true, desc = "Move down by display line" }))
+    return vim.v.count == 0 and "gj" or "j"
+end, vim.tbl_extend("force", opts, { expr = true, remap = false, desc = "Move down by display line" }))
 vim.keymap.set({ "n", "x" }, "k", function()
-    if vim.v.count == 0 then
-        return "gk"
-    else
-        return "k"
-    end
-end, vim.tbl_extend("force", opts, { expr = true, remap = true, desc = "Move up by display line" }))
+    return vim.v.count == 0 and "gk" or "k"
+end, vim.tbl_extend("force", opts, { expr = true, remap = false, desc = "Move up by display line" }))
 
 vim.keymap.set("n", "Q", ":noh<cr>Q", { silent = true })
 
@@ -244,6 +237,7 @@ vim.keymap.set({ "c", "i" }, "<C-b>", "<Left>", opts)
 vim.keymap.set({ "c", "i" }, "<C-f>", "<Right>", opts)
 vim.keymap.set("i", "<C-p>", "<Up>", opts)
 vim.keymap.set("i", "<C-n>", "<Down>", opts)
+vim.keymap.set("i", "<C-space>", "<C-n>", opts)
 
 vim.keymap.set("i", "<M-u>", "<C-o>gUw<C-o>w", opts)
 vim.keymap.set("i", "<M-l>", "<C-o>guw<C-o>w", opts)

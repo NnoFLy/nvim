@@ -1,10 +1,11 @@
 vim.o.autocomplete = false
 vim.o.pumheight = 5
 vim.o.pummaxwidth = 40
-vim.o.pumblend = 20
+vim.o.pumblend = 5
+
 vim.g.autotrigger = false
 
-vim.opt.complete = {
+vim.o.complete = {
     "o^20",  -- 'o' omnifunc, which becomes LSP completion when an LSP attaches
     ".^10",  -- '.' current buffer
     "w^10",  -- 'w' buffers in other windows
@@ -12,7 +13,7 @@ vim.opt.complete = {
     "u^10",  -- 'u' unloaded buffers
 }
 
-vim.opt.completeopt = {
+vim.o.completeopt = {
     "menu",
     "menuone",
     "noinsert",
@@ -34,8 +35,8 @@ local load_snippets = LoadOnce(function()
 
         mappings = {
             expand = "",
-            jump_next = "",
-            jump_prev = "",
+            jump_next = "<tab>",
+            jump_prev = "<S-tab>",
             stop = "<C-c>",
         },
 
@@ -50,45 +51,6 @@ local load_snippets = LoadOnce(function()
 
     snippets.start_lsp_server({
         match = false,
-    })
-
-    local expand_or_jump = function()
-        local can_expand = #snippets.expand({ insert = false }) > 0
-
-        if can_expand then
-            vim.schedule(snippets.expand)
-            return ""
-        end
-
-        if snippets.session.get() ~= nil then
-            snippets.session.jump("next")
-            return ""
-        end
-
-        return "\t"
-    end
-
-    local jump_prev = function()
-        if snippets.session.get() ~= nil then
-            snippets.session.jump("prev")
-            return ""
-        end
-
-        return "<S-Tab>"
-    end
-
-    vim.keymap.set("i", "<Tab>", expand_or_jump, {
-        expr = true,
-        noremap = true,
-        silent = true,
-        desc = "Expand snippet / jump next",
-    })
-
-    vim.keymap.set("i", "<S-Tab>", jump_prev, {
-        expr = true,
-        noremap = true,
-        silent = true,
-        desc = "Jump previous snippet",
     })
 end)
 

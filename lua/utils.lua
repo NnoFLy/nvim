@@ -122,7 +122,7 @@ Defer(load_qf)
 local load_gm = LoadOnce(function()
     local gm_path = {
         dir = "/home/nnofly/code/personal/gm.nvim",
-        url = "https://github.com/I0I-I0I/gm.nvim"
+        url = "https://github.com/NnoFLy/gm.nvim"
     }
 
     if vim.fn.isdirectory(gm_path.dir) == 1 then
@@ -172,6 +172,17 @@ local load_cloak = LoadOnce(function()
     })
 end)
 load_cloak()
+
+-- Screenkey
+local load_screenkey = LoadOnce(function()
+    vim.pack.add({ "https://github.com/NStefan002/screenkey.nvim" })
+    require("screenkey").setup()
+end)
+
+vim.keymap.set("n", "<leader>s", function()
+    load_screenkey()
+    vim.cmd.Screenkey()
+end, { desc = "Screenkey: Toggle" })
 
 -- Colorizer
 local load_colorizer = LoadOnce(function()
