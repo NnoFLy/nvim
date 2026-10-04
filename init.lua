@@ -18,6 +18,23 @@ vim.o.undolevels = 10000000
 vim.o.undoreload = 10000000
 vim.o.inccommand = "split"
 vim.o.termguicolors = true
+
+if vim.env.SSH_TTY or vim.env.SSH_CONNECTION then
+    local osc52 = require("vim.ui.clipboard.osc52")
+
+    vim.g.clipboard = {
+        name = "OSC 52",
+        copy = {
+            ["+"] = osc52.copy("+"),
+            ["*"] = osc52.copy("*"),
+        },
+        paste = {
+            ["+"] = osc52.paste("+"),
+            ["*"] = osc52.paste("*"),
+        },
+    }
+end
+
 vim.o.grepprg = "rg --vimgrep --no-heading"
 vim.o.path = "**"
 vim.o.wildignore =
@@ -29,6 +46,7 @@ vim.o.spelllang = "en,ru"
 vim.o.linebreak = true
 vim.o.winborder = "none"
 vim.o.splitright = true
+vim.o.mouse = "a"
 vim.o.mousescroll = "ver:1,hor:1"
 
 vim.o.signcolumn = "yes:1"
@@ -184,6 +202,9 @@ vim.keymap.set("n", "<leader>O", function()
     vim.fn.system(cmd .. " " .. file)
 end, vim.tbl_extend("force", opts, { desc = "Open explorer from current file" }))
 
+vim.keymap.set({ "n", "t", "i" }, "<M-t>", "<cmd>tabnew<cr>", { noremap = true, silent = true, desc = "Open term" })
+vim.keymap.set({ "n", "t", "i" }, "<M-h>", "<cmd>wincmd w<cr>", { noremap = true, silent = true })
+
 vim.keymap.set("v", "<M-w>", function()
     vim.cmd([[norm! "+y]])
 end, vim.tbl_extend("force", opts, { desc = "Copy" }))
@@ -218,9 +239,9 @@ vim.keymap.set({ "n", "v" }, "<C-y>", "4<C-y>", vim.tbl_extend("force", opts, { 
 vim.keymap.set("n", "<M-p>", "<cmd>cprev<CR>zz", vim.tbl_extend("force", opts, { desc = "Previous quickfix item" }))
 vim.keymap.set("n", "<M-n>", "<cmd>cnext<CR>zz", vim.tbl_extend("force", opts, { desc = "Next quickfix item" }))
 
-vim.keymap.set({ "n", "i" }, "<M-l>", "<cmd>t.<cr>",
+vim.keymap.set({ "n", "i" }, "<M-L>", "<cmd>t.<cr>",
     vim.tbl_extend("force", opts, { desc = "Duplicate current line" }))
-vim.keymap.set("x", "<M-l>", ":t'><cr>gv", vim.tbl_extend("force", opts, { desc = "Duplicate selection" }))
+vim.keymap.set("x", "<M-L>", ":t'><cr>gv", vim.tbl_extend("force", opts, { desc = "Duplicate selection" }))
 
 vim.keymap.set({ "n", "t", "i" }, { "<M-i>", "<C-M-i>" }, "<cmd>tabprevious<cr>",
     vim.tbl_extend("force", opts, { desc = "Previous tab" }))
@@ -299,6 +320,15 @@ vim.api.nvim_create_autocmd("TermOpen", {
     group = main_group,
     callback = function(args)
         vim.opt_local.spell = false
+        vim.opt_local.number = false
+        vim.opt_local.relativenumber = false
+        vim.opt_local.signcolumn = "no"
+        vim.opt_local.foldcolumn = "0"
+        vim.opt_local.cursorline = false
+        vim.opt_local.scrollback = 100000
+
+        -- vim.bo[args.buf].bufhidden = "hide"
+        vim.bo[args.buf].swapfile = false
         vim.bo.filetype = "shell"
 
         vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter" }, {
@@ -320,23 +350,30 @@ vim.api.nvim_create_autocmd("TermOpen", {
     end,
 })
 
-vim.api.nvim_create_autocmd({ "TermRequest" }, {
+vim.api.nvim_create_autocmd("TermRequest", {
     group = main_group,
-    desc = "Handles OSC 7 dir change requests",
+    desc = "Keep terminal buffer cwd synced with OSC 7",
     callback = function(ev)
-        local val, n = string.gsub(ev.data.sequence, "\027]7;file://[^/]*", "")
-        if n > 0 then
-            local dir = val
-            if vim.fn.isdirectory(dir) == 0 then
-                vim.notify("invalid dir: " .. dir)
-                return
-            end
-            vim.b[ev.buf].osc7_dir = dir
-            if vim.api.nvim_get_current_buf() == ev.buf then
-                vim.cmd.lcd(dir)
-            end
+        local uri = ev.data.sequence:match("\027]7;([^\007\027]+)")
+        if not uri then
+            return
         end
-    end
+
+        local host, path = uri:match("^file://([^/]*)/(.*)$")
+        if not path or (host ~= "" and host ~= "localhost") then
+            return
+        end
+
+        local dir = vim.uri_to_fname("file:///" .. path)
+        if vim.fn.isdirectory(dir) ~= 1 then
+            return
+        end
+
+        vim.b[ev.buf].osc7_dir = dir
+        vim.api.nvim_buf_call(ev.buf, function()
+            vim.cmd("bcd " .. vim.fn.fnameescape(dir))
+        end)
+    end,
 })
 
 vim.api.nvim_create_autocmd("FileType", {

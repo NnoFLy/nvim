@@ -355,13 +355,6 @@ vim.keymap.set("n", "<C-M-b>", "<cmd>Telescope scope buffers<cr>", {
     desc = "Telescope: all scope buffersbuffers",
 })
 
-vim.keymap.set({ "n", "t" }, "<M-t>", picker("buffers", {
-    default_text = "term://",
-    previewer = true,
-}), {
-    desc = "Telescope: terminal buffers",
-})
-
 vim.keymap.set("n", "th", picker("help_tags"), {
     desc = "Telescope: help tags",
 })
